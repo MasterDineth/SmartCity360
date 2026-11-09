@@ -1,0 +1,315 @@
+@startuml SmartCity360_Master_Architecture
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI", Arial, sans-serif
+
+header UrbanTech Solutions - SmartCity360
+title SmartCity360 Master GoF Design Patterns Architecture
+
+package "com.urbantech.smartcity360.partA_decorator" {
+    interface DataStream {
+        +transmit() : String
+        +getExecutionTrace() : List<String>
+        +getLayerDescription() : String
+    }
+
+    class EnergyMeterStream implements DataStream {
+        -meterId : String
+        -kilowattHours : double
+        -timestamp : String
+        -executionTrace : List<String>
+        +transmit() : String
+        +getExecutionTrace() : List<String>
+        +getLayerDescription() : String
+    }
+
+    abstract class StreamDecorator implements DataStream {
+        #wrappedStream : DataStream
+        +StreamDecorator(wrappedStream : DataStream)
+        +transmit() : String
+        +getExecutionTrace() : List<String>
+        +getLayerDescription() : String
+    }
+
+    class EncryptionDecorator extends StreamDecorator {
+        +EncryptionDecorator(wrappedStream : DataStream)
+        +transmit() : String
+        +getLayerDescription() : String
+    }
+
+    class AuthenticationDecorator extends StreamDecorator {
+        -secretKey : String
+        +AuthenticationDecorator(wrappedStream : DataStream)
+        +transmit() : String
+        +getLayerDescription() : String
+        -computeHmacSha256(data : String, key : String) : String
+    }
+
+    class CompressionDecorator extends StreamDecorator {
+        +CompressionDecorator(wrappedStream : DataStream)
+        +transmit() : String
+        +getLayerDescription() : String
+        -gzipCompress(data : byte[]) : byte[]
+    }
+
+    StreamDecorator o--> DataStream : wraps (1..1)
+}
+
+package "com.urbantech.smartcity360.partB_composite" {
+    enum ZoneType {
+        CITY
+        DISTRICT
+        STREET
+        BUILDING
+        -description : String
+        +getDescription() : String
+    }
+
+    abstract class SmartZoneComponent {
+        +getName()* : String
+        +getZoneType()* : ZoneType
+        +getPowerUsageKw()* : double
+        +shutdownPower(traceLog : List<String>)* : void
+        +restorePower(traceLog : List<String>)* : void
+        +reportUsage(indentLevel : int)* : String
+        +add(component : SmartZoneComponent) : void
+        +remove(component : SmartZoneComponent) : void
+        +getChildren() : List<SmartZoneComponent>
+    }
+
+    class BuildingLeaf extends SmartZoneComponent {
+        -name : String
+        -buildingCategory : String
+        -nominalKw : double
+        -powerActive : boolean
+        +BuildingLeaf(name : String, category : String, nominalKw : double)
+        +getName() : String
+        +getZoneType() : ZoneType
+        +getPowerUsageKw() : double
+        +shutdownPower(traceLog : List<String>) : void
+        +restorePower(traceLog : List<String>) : void
+        +reportUsage(indentLevel : int) : String
+        +isPowerActive() : boolean
+    }
+
+    class ZoneComposite extends SmartZoneComponent {
+        -name : String
+        -zoneType : ZoneType
+        -children : List<SmartZoneComponent>
+        +ZoneComposite(name : String, zoneType : ZoneType)
+        +getName() : String
+        +getZoneType() : ZoneType
+        +getPowerUsageKw() : double
+        +shutdownPower(traceLog : List<String>) : void
+        +restorePower(traceLog : List<String>) : void
+        +reportUsage(indentLevel : int) : String
+        +add(component : SmartZoneComponent) : void
+        +remove(component : SmartZoneComponent) : void
+        +getChildren() : List<SmartZoneComponent>
+    }
+
+    ZoneComposite o--> SmartZoneComponent : children (0..*)
+    SmartZoneComponent --> ZoneType : has
+}
+
+package "com.urbantech.smartcity360.partC_chain" {
+    enum SeverityLevel {
+        LOW
+        MEDIUM
+        HIGH
+        EXTREME
+        -level : int
+        -description : String
+        +getLevel() : int
+        +getDescription() : String
+    }
+
+    class ComplaintRequest {
+        -complaintId : String
+        -citizenName : String
+        -category : String
+        -description : String
+        -severity : SeverityLevel
+        +ComplaintRequest(...)
+        +getComplaintId() : String
+        +getCitizenName() : String
+        +getCategory() : String
+        +getDescription() : String
+        +getSeverity() : SeverityLevel
+    }
+
+    class ComplaintResolution {
+        -handled : boolean
+        -handledByRole : String
+        -actionTaken : String
+        -escalationTrail : List<String>
+        +ComplaintResolution(...)
+        +isHandled() : boolean
+        +getHandledByRole() : String
+        +getActionTaken() : String
+        +getEscalationTrail() : List<String>
+    }
+
+    abstract class ComplaintHandler {
+        #nextHandler : ComplaintHandler
+        #handlerName : String
+        #active : boolean
+        +ComplaintHandler(handlerName : String)
+        +setNextHandler(next : ComplaintHandler) : ComplaintHandler
+        +handle(request : ComplaintRequest, trail : List<String>) : ComplaintResolution
+        +getRole()* : String
+        #canHandle(request : ComplaintRequest)* : boolean
+        #process(request : ComplaintRequest, trail : List<String>)* : ComplaintResolution
+        +isActive() : boolean
+        +setActive(active : boolean) : void
+    }
+
+    class LocalStaffHandler extends ComplaintHandler {
+        +LocalStaffHandler()
+        +getRole() : String
+        #canHandle(request : ComplaintRequest) : boolean
+        #process(...) : ComplaintResolution
+    }
+
+    class SupervisorHandler extends ComplaintHandler {
+        +SupervisorHandler()
+        +getRole() : String
+        #canHandle(request : ComplaintRequest) : boolean
+        #process(...) : ComplaintResolution
+    }
+
+    class CityManagerHandler extends ComplaintHandler {
+        +CityManagerHandler()
+        +getRole() : String
+        #canHandle(request : ComplaintRequest) : boolean
+        #process(...) : ComplaintResolution
+    }
+
+    ComplaintHandler o--> ComplaintHandler : nextHandler (0..1)
+    ComplaintHandler ..> ComplaintRequest : evaluates
+    ComplaintHandler ..> ComplaintResolution : produces
+    ComplaintRequest --> SeverityLevel : has
+}
+
+package "com.urbantech.smartcity360.partD_flyweight" {
+    interface StreetLightFlyweight {
+        +renderOperation(poleId, lat, lon, isOn, dimmingPercent) : String
+        +getIntrinsicSummary() : String
+        +getApproximateIntrinsicBytes() : long
+    }
+
+    class SharedLightModel implements StreetLightFlyweight {
+        -modelCode : String
+        -manufacturer : String
+        -wattage : int
+        -lumens : int
+        -colorTempK : int
+        -firmwareLutPayload : byte[]
+        ~SharedLightModel(modelCode, mfr, watts, lumens, k)
+        +renderOperation(...) : String
+        +getIntrinsicSummary() : String
+        +getApproximateIntrinsicBytes() : long
+    }
+
+    class StreetLightFactory {
+        -{static} FLYWEIGHT_POOL : Map<String, StreetLightFlyweight>
+        +{static} getLightModel(code, mfr, watts, lumens, k) : StreetLightFlyweight
+        +{static} getPoolSize() : int
+        +{static} getCachedModels() : Map<String, StreetLightFlyweight>
+        +{static} clearPool() : void
+    }
+
+    class StreetLightContext {
+        -poleId : String
+        -streetName : String
+        -latitude : double
+        -longitude : double
+        -poweredOn : boolean
+        -brightnessPercent : int
+        -sharedModel : StreetLightFlyweight
+        +StreetLightContext(...)
+        +operate() : String
+        +getApproximateExtrinsicBytes() : long
+    }
+
+    class MemoryBenchmarkService {
+        +{static} ESTIMATED_INTRINSIC_BYTES_PER_MODEL : long
+        +{static} ESTIMATED_EXTRINSIC_BYTES_PER_POLE : long
+        +benchmark(totalLights, uniqueModels) : BenchmarkResult
+        +runStandardBenchmark(totalLights) : BenchmarkResult
+        +generateStreetlights(count) : List<StreetLightContext>
+    }
+
+    StreetLightFactory ..> StreetLightFlyweight : caches & supplies
+    StreetLightContext o--> StreetLightFlyweight : references (8-byte pointer)
+    MemoryBenchmarkService ..> StreetLightFactory : uses
+    MemoryBenchmarkService ..> StreetLightContext : creates
+}
+
+package "com.urbantech.smartcity360.partE_interpreter" {
+    class PolicyContext {
+        -attributes : Map<String, Object>
+        -evaluationTrace : List<String>
+        +setAttribute(key : String, value : Object) : void
+        +getAttribute(key : String) : Object
+        +hasAttribute(key : String) : boolean
+        +addTrace(message : String) : void
+        +getEvaluationTrace() : List<String>
+        +clearTrace() : void
+    }
+
+    interface Expression {
+        +interpret(context : PolicyContext)* : boolean
+        +toASTString(indent : int)* : String
+    }
+
+    class ComparisonExpression implements Expression {
+        -variableName : String
+        -operator : String
+        -rawTargetValue : String
+        +ComparisonExpression(var, op, target)
+        +interpret(context : PolicyContext) : boolean
+        +toASTString(indent : int) : String
+        -compareNumeric(actual, op, target) : boolean
+        -compareString(actual, op, target) : boolean
+    }
+
+    class AndExpression implements Expression {
+        -left : Expression
+        -right : Expression
+        +AndExpression(left : Expression, right : Expression)
+        +interpret(context : PolicyContext) : boolean
+        +toASTString(indent : int) : String
+    }
+
+    class OrExpression implements Expression {
+        -left : Expression
+        -right : Expression
+        +OrExpression(left : Expression, right : Expression)
+        +interpret(context : PolicyContext) : boolean
+        +toASTString(indent : int) : String
+    }
+
+    class NotExpression implements Expression {
+        -expression : Expression
+        +NotExpression(expression : Expression)
+        +interpret(context : PolicyContext) : boolean
+        +toASTString(indent : int) : String
+    }
+
+    class PolicyDSLParser {
+        +parse(dslRule : String) : Expression
+        -tokenize(input : String) : List<Token>
+    }
+
+    AndExpression o--> Expression : left, right
+    OrExpression o--> Expression : left, right
+    NotExpression o--> Expression : expression
+    Expression ..> PolicyContext : evaluates against
+    PolicyDSLParser ..> Expression : parses & constructs AST
+}
+
+@enduml

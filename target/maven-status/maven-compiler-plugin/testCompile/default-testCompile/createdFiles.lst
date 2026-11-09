@@ -1,0 +1,6 @@
+com\urbantech\smartcity360\PartCChainTest.class
+com\urbantech\smartcity360\PartEInterpreterTest.class
+com\urbantech\smartcity360\PartDFlyweightTest.class
+com\urbantech\smartcity360\PartADecoratorTest.class
+com\urbantech\smartcity360\PartBCompositeTest.class
+com\urbantech\smartcity360\SmartCityDashboardSmokeTest.class

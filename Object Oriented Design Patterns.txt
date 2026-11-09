@@ -1,0 +1,71 @@
+guide me to how to complete this assignment for the Object Oriented Design Patterns module step by step.
+explain all the steps for the completion for what to include in the document; what should I include, should I answer questions here and so.
+explain the project development process; what project should I make? (Java web, java EE application or what?), what should I include?, what kind of project should I make? how to demonstrate the process (via terminal or a simple front end?), and other details.
+guide me through the video demonstration; what parts should I demonstrate? what parts to cover. etc.
+
+SmartCity360 – A Smart City Management Platform 
+SmartCity360 is a digital solution that manages city infrastructure, devices, services, and resident 
+interactions. It integrates systems such as waste management, energy monitoring, sensor networks, and 
+public administration. 
+As a senior developer at UrbanTech Solutions, your role is to architect maintainable, efficient, and secure 
+components using design patterns. 
+In this assessment, you will work on five parts (A, B, C, D, and E), each focusing on different 
+components of the SmartCity360 system and requiring you to apply appropriate object-oriented design 
+patterns to solve real-world problems. Part F provides instructions for the final presentation and report. 
+Part A - Dynamic Security Wrappers for Data Streams 
+SmartCity360 must secure data streams from energy meters with layers such as encryption, authentication, 
+and compression, which should be addable without altering the core logic. 
+1. Identify and justify the most suitable design pattern for this requirement. (3 marks) 
+2. Explain how the pattern supports flexible and layered enhancements to object functionality. (4 
+marks) 
+3. Evaluate the long-term benefits of this pattern in terms of reusability and system extensibility. (8 
+marks) 
+(Total = 15 marks) 
+Part B - Hierarchical Structure of Smart Zones 
+City zones (city → district → street → building) need to be represented hierarchically so that commands 
+like “shutdown power” or “report usage” can be applied uniformly at any level. 
+1. Identify the most appropriate design pattern to model such a structure. (3 marks) 
+2. Provide a UML class diagram to demonstrate the selected design pattern’s mechanism. (4 marks) 
+3. Discuss its usefulness for managing a large and growing city infrastructure. (8 marks) 
+(Total = 15 marks) 
+Part C - Escalation of Citizen Complaints 
+When a resident submits a complaint, the system should escalate it from local staff to supervisors to city 
+managers depending on severity. 
+1. Identify the most appropriate pattern to handle dynamic escalation paths. (3 marks) 
+2. Explain how this pattern enables decoupled request handling. (4 marks) 
+3. Evaluate its benefits and drawbacks in terms of flexibility and traceability. (8 marks) 
+(Total = 15 marks) 
+Part D - Efficient Management of Smart Street Lights 
+The city uses thousands of smart streetlights with identical behavior and configuration but different 
+locations. The system must minimize memory usage. 
+1. Identify and justify the pattern that best optimizes resource use in this scenario. (3 marks) 
+2. Explain how this pattern handles shared (intrinsic) and unique (extrinsic) properties. (4 marks) 
+3. Analyze the performance impact when scaling to tens of thousands of similar objects. (8 marks) 
+(Total = 15 marks) 
+Part E - Interpreting City Policies Defined in DSL 
+The city’s operational rules (e.g., noise limits, parking hours) are defined in a mini-language that must be 
+parsed and evaluated dynamically by the system. 
+1. Identify the most appropriate design pattern for interpreting this rule language. (3 marks) 
+2. Provide a UML class diagram to demonstrate the selected design pattern’s mechanism. (4 marks) 
+3. Critically assess the pattern’s suitability for rule updates and extensibility. (8 marks) 
+(Total = 15 marks) 
+Part F – Final Project Demonstration, VIVA, and Documentation 
+1. You are expected to develop the system based on the given scenario, applying the appropriate 
+object-oriented design patterns. 
+2. You will demonstrate your application during a VIVA session, where you will explain your use 
+of design patterns, discuss architectural choices, and answer questions related to the design, 
+functionality, and overall system structure. (15 marks) 
+3. You are expected to prepare comprehensive project documentation, including a UML class 
+diagram and working code, to illustrate the design and functionality of your application. (10 
+marks) 
+4. You must submit a 10–15-minute recorded demonstration video showcasing your implemented 
+system, its key functionalities, and the application of the selected design patterns. The video 
+should clearly demonstrate how your solution addresses the given scenario. 
+5. Final Submission Requirements: 
+a. Project Documentation (Project Document): Upload the final project report in PDF 
+format to the Project Document section of the Student Portal. 
+b. Project Source Code (Project File): Upload the complete project source code, including 
+all required files and resources, as a ZIP file to the Project File section of the Student 
+Portal. 
+c. Demonstration Video: Upload the 10–15-minute recorded demonstration video in MP4 
+format to the Demonstration Video section of the Student Portal.
