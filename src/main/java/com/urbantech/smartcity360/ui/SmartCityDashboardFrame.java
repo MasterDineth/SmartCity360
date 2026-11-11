@@ -32,40 +32,33 @@ public class SmartCityDashboardFrame extends JFrame {
         setLayout(new BorderLayout(0, 0));
 
         // 1. Top Enterprise Header Bar
-        JPanel headerPanel = new JPanel(new BorderLayout(15, 5));
+        JPanel headerPanel = new JPanel(new BorderLayout(15, 0));
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(80, 80, 80)),
-                new EmptyBorder(10, 18, 10, 18)));
+                new EmptyBorder(12, 18, 12, 18)));
 
-        // Title and Subtitle
-        JPanel titleGroup = new JPanel(new GridLayout(2, 1, 2, 2));
+        // Title
         JLabel titleLabel = new JLabel("SmartCity360 - UrbanTech Solutions Integrated Command Platform");
-        titleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 17));
+        titleLabel.setFont(AppFontManager.getBoldFont(16));
         titleLabel.setForeground(new Color(0, 180, 216));
 
-        JLabel subtitleLabel = new JLabel("Enterprise GoF Object-Oriented Design Patterns: Decorator | Composite | Chain of Resp | Flyweight | Interpreter");
-        subtitleLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        subtitleLabel.setForeground(Color.GRAY);
-
-        titleGroup.add(titleLabel);
-        titleGroup.add(subtitleLabel);
-
         // Header Actions: Clean Theme Toggle (No missing glyph emojis)
-        JPanel actionGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel actionGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         JButton themeBtn = new JButton("Light Theme");
+        themeBtn.setFont(AppFontManager.getFont(12));
         themeBtn.setFocusPainted(false);
         themeBtn.addActionListener(e -> toggleTheme(themeBtn));
 
         actionGroup.add(themeBtn);
 
-        headerPanel.add(titleGroup, BorderLayout.WEST);
+        headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(actionGroup, BorderLayout.EAST);
 
         add(headerPanel, BorderLayout.NORTH);
 
         // 2. Main Tabbed Pane (5 Pattern Tabs - Full Center Area)
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        tabbedPane.setFont(AppFontManager.getBoldFont(12));
 
         tabbedPane.addTab("Part A: Decorator (Energy Security)", new PartADecoratorPanel());
         tabbedPane.addTab("Part B: Composite (Smart Zones)", new PartBCompositePanel());
@@ -86,10 +79,12 @@ public class SmartCityDashboardFrame extends JFrame {
         try {
             if (isDarkMode) {
                 FlatLightLaf.setup();
+                AppFontManager.applyGlobalDefaults();
                 toggleBtn.setText("Dark Theme");
                 isDarkMode = false;
             } else {
                 FlatDarkLaf.setup();
+                AppFontManager.applyGlobalDefaults();
                 toggleBtn.setText("Light Theme");
                 isDarkMode = true;
             }

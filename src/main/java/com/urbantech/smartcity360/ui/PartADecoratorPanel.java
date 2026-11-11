@@ -57,7 +57,7 @@ public class PartADecoratorPanel extends JPanel {
                 BorderFactory.createEtchedBorder(),
                 "IoT Energy Meter & Dynamic Security Wrapper Pipeline",
                 TitledBorder.LEFT, TitledBorder.TOP,
-                new Font(Font.SANS_SERIF, Font.BOLD, 13)));
+                AppFontManager.getBoldFont(13)));
 
         // Top form: Meter Input
         JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 8));
@@ -86,7 +86,7 @@ public class PartADecoratorPanel extends JPanel {
         pipelineVisualLabel.setForeground(new Color(0, 180, 216));
 
         JButton transmitBtn = new JButton("Transmit Secured Telemetry Stream");
-        transmitBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        transmitBtn.setFont(AppFontManager.getBoldFont(13));
         transmitBtn.setBackground(new Color(13, 110, 253));
         transmitBtn.setForeground(Color.WHITE);
         transmitBtn.setFocusPainted(false);
@@ -114,7 +114,7 @@ public class PartADecoratorPanel extends JPanel {
         payloadArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         payloadPanel.add(new JScrollPane(payloadArea), BorderLayout.CENTER);
 
-        statsLabel.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 12));
+        statsLabel.setFont(AppFontManager.getFont(Font.ITALIC, 12));
         payloadPanel.add(statsLabel, BorderLayout.SOUTH);
 
         // Tab Local Execution Trace Area

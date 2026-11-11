@@ -77,7 +77,7 @@ public class PartCChainPanel extends JPanel {
         formPanel.add(new JLabel("Incident Description:"));
         formPanel.add(descField);
 
-        submitBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        submitBtn.setFont(AppFontManager.getBoldFont(12));
         submitBtn.setBackground(new Color(13, 110, 253));
         submitBtn.setForeground(Color.WHITE);
         submitBtn.setFocusPainted(false);
@@ -113,7 +113,7 @@ public class PartCChainPanel extends JPanel {
         bannerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEtchedBorder(),
                 new EmptyBorder(8, 12, 8, 12)));
-        resolutionBanner.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        resolutionBanner.setFont(AppFontManager.getBoldFont(13));
         bannerPanel.add(resolutionBanner, BorderLayout.CENTER);
 
         JPanel tracePanel = new JPanel(new BorderLayout());
@@ -241,14 +241,14 @@ public class PartCChainPanel extends JPanel {
                     BorderFactory.createLineBorder(Color.GRAY, 1),
                     new EmptyBorder(6, 8, 6, 8)));
 
-            titleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+            titleLabel.setFont(AppFontManager.getBoldFont(12));
             titleLabel.setText(title);
 
-            descLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
+            descLabel.setFont(AppFontManager.getFont(11));
             descLabel.setForeground(Color.GRAY);
             descLabel.setText(desc);
 
-            statusLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
+            statusLabel.setFont(AppFontManager.getBoldFont(11));
 
             add(titleLabel);
             add(descLabel);

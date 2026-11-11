@@ -85,7 +85,7 @@ public class PartEInterpreterPanel extends JPanel {
         sensorPanel.add(createFieldWrapper("PERMIT (Status):", permitCombo));
 
         JButton evalBtn = new JButton("Parse & Evaluate Policy");
-        evalBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        evalBtn.setFont(AppFontManager.getBoldFont(12));
         evalBtn.setBackground(new Color(13, 110, 253));
         evalBtn.setForeground(Color.WHITE);
         evalBtn.setFocusPainted(false);
@@ -98,7 +98,7 @@ public class PartEInterpreterPanel extends JPanel {
 
         // 3. Compact Verdict Banner (No emojis, reduced height)
         verdictBadge.setOpaque(true);
-        verdictBadge.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        verdictBadge.setFont(AppFontManager.getBoldFont(14));
         verdictBadge.setPreferredSize(new Dimension(800, 32));
         verdictBadge.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 

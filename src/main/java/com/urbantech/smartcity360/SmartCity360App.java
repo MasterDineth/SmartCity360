@@ -1,6 +1,7 @@
 package com.urbantech.smartcity360;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.urbantech.smartcity360.ui.AppFontManager;
 import com.urbantech.smartcity360.ui.SmartCityDashboardFrame;
 
 import javax.swing.SwingUtilities;
@@ -27,6 +28,7 @@ public class SmartCity360App {
 
         SwingUtilities.invokeLater(() -> {
             try {
+                AppFontManager.initialize();
                 FlatDarkLaf.setup();
                 SmartCityDashboardFrame frame = new SmartCityDashboardFrame();
                 frame.setVisible(true);

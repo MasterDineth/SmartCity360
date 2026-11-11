@@ -90,9 +90,9 @@ public class PartBCompositePanel extends JPanel {
                 new EmptyBorder(6, 12, 6, 12)));
 
         JPanel statusGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 4));
-        totalCityLoadLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        totalCityLoadLabel.setFont(AppFontManager.getBoldFont(13));
         totalCityLoadLabel.setForeground(new Color(0, 180, 216));
-        selectedNodeLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+        selectedNodeLabel.setFont(AppFontManager.getFont(12));
         statusGroup.add(totalCityLoadLabel);
         statusGroup.add(new JSeparator(SwingConstants.VERTICAL));
         statusGroup.add(selectedNodeLabel);

@@ -74,7 +74,7 @@ public class PartDFlyweightPanel extends JPanel {
         JButton runBtn = new JButton("Run Flyweight Benchmark");
         runBtn.setBackground(new Color(13, 110, 253));
         runBtn.setForeground(Color.WHITE);
-        runBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        runBtn.setFont(AppFontManager.getBoldFont(12));
         runBtn.setFocusPainted(false);
         runBtn.addActionListener(e -> {
             int count = parseSelectedCount();
@@ -98,8 +98,8 @@ public class PartDFlyweightPanel extends JPanel {
 
         // 3. JTable of Inspected Poles (Maximized Display Area)
         inspectedTable.setRowHeight(22);
-        inspectedTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        inspectedTable.getTableHeader().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        inspectedTable.setFont(AppFontManager.getFont(12));
+        inspectedTable.getTableHeader().setFont(AppFontManager.getBoldFont(12));
         JScrollPane tableScroll = new JScrollPane(inspectedTable);
         tableScroll.setBorder(BorderFactory.createTitledBorder("Inspected Physical Streetlight Poles (First 200 Contexts - Demonstrating Shared Flyweight Memory Addresses)"));
 
@@ -252,11 +252,11 @@ public class PartDFlyweightPanel extends JPanel {
                     BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
                     new EmptyBorder(6, 10, 6, 10)));
 
-            titleLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+            titleLabel.setFont(AppFontManager.getFont(12));
             titleLabel.setForeground(Color.GRAY);
             titleLabel.setText(title);
 
-            valueLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+            valueLabel.setFont(AppFontManager.getBoldFont(15));
             valueLabel.setText(initialValue);
             if (title.contains("Saved")) {
                 valueLabel.setForeground(new Color(76, 175, 80));

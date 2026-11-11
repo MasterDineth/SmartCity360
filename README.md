@@ -5,7 +5,7 @@
 
 ---
 
-## 🏛️ Project Overview
+## Project Overview
 
 **SmartCity360** is an integrated municipal command platform designed to monitor, secure, and operate metropolitan infrastructure through five classic **Gang of Four (GoF)** design patterns:
 
@@ -19,7 +19,7 @@
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### Prerequisites
 - **Java SE Development Kit 17+** (`javac -version`)
@@ -31,11 +31,11 @@ mvn clean compile
 ```
 
 ### 2. Execute Automated Verification Suite (JUnit 5)
-Run all 31 automated tests across all 5 design patterns and UI smoke tests:
+Run all 32 automated tests across all 5 design patterns and UI smoke tests:
 ```powershell
 mvn test
 ```
-*Expected Result:* `Tests run: 31, Failures: 0, Errors: 0, Skipped: 0` (`BUILD SUCCESS`).
+*Expected Result:* `Tests run: 32, Failures: 0, Errors: 0, Skipped: 0` (`BUILD SUCCESS`).
 
 ### 3. Launch Interactive FlatLaf Desktop Application
 ```powershell
@@ -50,7 +50,7 @@ java -jar target/smartcity360-1.0.0.jar
 
 ---
 
-## 📂 Project Repository Layout
+## Project Repository Layout
 
 ```
 SmartCity360/
@@ -77,12 +77,12 @@ SmartCity360/
         ├── PartCChainTest.java               # 5 tests for complaint routing & dynamic bypasses
         ├── PartDFlyweightTest.java           # 4 tests for streetlight pooling & 95%+ RAM savings
         ├── PartEInterpreterTest.java         # 8 tests for mini-DSL parsing & AST interpretation
-        └── SmartCityDashboardSmokeTest.java  # 3 tests for event bus & UI component initialization
+        └── SmartCityDashboardSmokeTest.java  # 4 tests for event bus, font manager & UI initialization
 ```
 
 ---
 
-## 📚 Complete Academic Documentation
+## Complete Academic Documentation
 
 Full academic submissions and presentation resources are located under the [`docs/`](docs/) directory:
 1. **[Academic Final Report (`docs/SmartCity360_Final_Report.md`)](docs/SmartCity360_Final_Report.md):**

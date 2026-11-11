@@ -333,7 +333,12 @@ sequenceDiagram
    if (nextHandler != null) {
        return nextHandler.handle(request, trail);
    }
-   return new ComplaintResolution(false, "UNRESOLVED / EXTERNAL ESCALATION", "Forwarded to State Bureau.", trail);
+   return new ComplaintResolution(
+           false,
+           "UNRESOLVED / EXTERNAL ESCALATION",
+           "Forwarded to Emergency Operations Center / External State Bureau for Manual Intervention.",
+           trail
+   );
    ```
 3. **Fluent Chain Configuration:** Handlers are assembled dynamically via fluent method chaining:
    `localStaff.setNextHandler(supervisor).setNextHandler(cityManager);`
@@ -591,13 +596,13 @@ The five GoF patterns operate synergistically within SmartCity360's multi-tier a
 graph TD
     subgraph UI ["Swing GUI Presentation Tier (FlatLaf)"]
         Frame[SmartCityDashboardFrame]
-        TabA[PartADecoratorPanel]
-        TabB[PartBCompositePanel]
-        TabC[PartCChainPanel]
-        TabD[PartDFlyweightPanel]
-        TabE[PartEInterpreterPanel]
-        Console[Master Execution Trace Console]
-        LogBus[ExecutionLogBus]
+        Tabs["JTabbedPane (Full-Height Center Layout)"]
+        TabA["PartADecoratorPanel (Dedicated Trace)"]
+        TabB["PartBCompositePanel (Dedicated Trace)"]
+        TabC["PartCChainPanel (Dedicated Trace)"]
+        TabD["PartDFlyweightPanel (Dedicated Trace)"]
+        TabE["PartEInterpreterPanel (Dedicated Trace)"]
+        LogBus["ExecutionLogBus (Decoupled Background Bus)"]
     end
 
     subgraph Domain ["Pure GoF Pattern Domain Modules"]
@@ -638,13 +643,12 @@ graph TD
         end
     end
 
-    Frame --> TabA
-    Frame --> TabB
-    Frame --> TabC
-    Frame --> TabD
-    Frame --> TabE
-    Frame --> Console
-    LogBus -.-> Console
+    Frame --> Tabs
+    Tabs --> TabA
+    Tabs --> TabB
+    Tabs --> TabC
+    Tabs --> TabD
+    Tabs --> TabE
 
     TabA --> DS
     TabB --> SZC
@@ -655,7 +659,18 @@ graph TD
     TabE --> PC
 
     Domain -.-> LogBus
+    TabA -.-> LogBus
+    TabB -.-> LogBus
+    TabC -.-> LogBus
+    TabD -.-> LogBus
+    TabE -.-> LogBus
 ```
+
+#### Architectural Refinement & Modern Presentation Architecture (Phase 4.5):
+1. **Full-Height Center Workspace:** `SmartCityDashboardFrame` utilizes a clean border layout where the `JTabbedPane` occupies the full central window area (`BorderLayout.CENTER`). The previously redundant bottom docked console was eliminated from the visual layout, allocating 100% of vertical screen real estate to the pattern workflows (e.g., allowing the Flyweight table to display 12–15 physical streetlight rows simultaneously and the Composite JTree/usage reports to expand freely).
+2. **Dedicated Per-Tab Execution Trace Logging:** Rather than mingling traces from all five distinct GoF patterns into one shared bottom window, each tab panel hosts its own dedicated local execution trace log panel, providing focused, contextual, real-time auditability for each specific pattern's actions.
+3. **Decoupled Background Event Bus (`ExecutionLogBus`):** `ExecutionLogBus` remains fully active as a thread-safe singleton in the background. Domain operations and UI interactions broadcast chronological events asynchronously to the event bus, ensuring seamless automated integration testing (e.g. `SmartCityDashboardSmokeTest`) and system-wide logging without introducing tight coupling between Swing GUI widgets and domain models.
+4. **Resilient Plain-Text Typography:** All UI components, tab titles, control buttons, and status badges utilize clean ASCII and standard typography (avoiding multi-byte emoji glyphs that risk rendering as missing box symbols `▯` on standard Windows platform JVMs).
 
 ---
 
@@ -686,7 +701,7 @@ mvn clean compile
 ```powershell
 mvn test
 ```
-*Expected Result:* 31 tests executed across all 5 design patterns and GUI integration, with 0 failures and 0 errors.
+*Expected Result:* 32 tests executed across all 5 design patterns and GUI integration, with 0 failures and 0 errors.
 
 #### 3. Launch Interactive FlatLaf Swing Application:
 ```powershell

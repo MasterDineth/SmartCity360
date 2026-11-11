@@ -1,5 +1,6 @@
 package com.urbantech.smartcity360;
 
+import com.urbantech.smartcity360.ui.AppFontManager;
 import com.urbantech.smartcity360.ui.ExecutionLogBus;
 import com.urbantech.smartcity360.ui.PartADecoratorPanel;
 import com.urbantech.smartcity360.ui.PartBCompositePanel;
@@ -69,7 +70,39 @@ class SmartCityDashboardSmokeTest {
             SmartCityDashboardFrame frame = new SmartCityDashboardFrame();
             assertNotNull(frame);
             assertTrue(frame.getTitle().contains("SmartCity360"));
+
+            // Verify subtitle text has been removed from all components in the frame hierarchy
+            boolean containsSubtitleText = findTextInComponentHierarchy(frame, "Enterprise GoF Object-Oriented Design Patterns");
+            assertFalse(containsSubtitleText, "Header subtitle text should be removed");
+
             frame.dispose();
         });
+    }
+
+    @Test
+    @DisplayName("Verify Poppins font is loaded and registered as active UI font family")
+    void testPoppinsFontActive() {
+        if (GraphicsEnvironment.isHeadless()) {
+            return;
+        }
+        AppFontManager.initialize();
+        assertEquals("Poppins", AppFontManager.getActiveFamily(), "Main font family should be Poppins");
+        assertEquals("Poppins", AppFontManager.getFont(13).getFamily());
+    }
+
+    private boolean findTextInComponentHierarchy(java.awt.Container container, String target) {
+        for (java.awt.Component comp : container.getComponents()) {
+            if (comp instanceof javax.swing.JLabel label) {
+                if (label.getText() != null && label.getText().contains(target)) {
+                    return true;
+                }
+            }
+            if (comp instanceof java.awt.Container childContainer) {
+                if (findTextInComponentHierarchy(childContainer, target)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
