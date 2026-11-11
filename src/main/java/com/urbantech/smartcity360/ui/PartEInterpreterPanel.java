@@ -45,8 +45,8 @@ public class PartEInterpreterPanel extends JPanel {
     private final JTextArea traceArea = new JTextArea(8, 45);
 
     public PartEInterpreterPanel() {
-        setLayout(new BorderLayout(12, 12));
-        setBorder(new EmptyBorder(16, 16, 16, 16));
+        setLayout(new BorderLayout(10, 10));
+        setBorder(new EmptyBorder(14, 14, 14, 14));
 
         initUI();
         setupListeners();
@@ -55,16 +55,16 @@ public class PartEInterpreterPanel extends JPanel {
 
     private void initUI() {
         // 1. Top Panel: Rule DSL Input & Presets
-        JPanel topPanel = new JPanel(new BorderLayout(8, 8));
+        JPanel topPanel = new JPanel(new BorderLayout(6, 6));
         topPanel.setBorder(BorderFactory.createTitledBorder("Policy Mini-DSL Rule Definition"));
 
-        JPanel presetRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        JPanel presetRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
         presetRow.add(new JLabel("Preset Policy Rules:"));
         presetCombo.setPreferredSize(new Dimension(500, 26));
         presetRow.add(presetCombo);
 
-        JPanel editRow = new JPanel(new BorderLayout(8, 5));
-        editRow.setBorder(new EmptyBorder(0, 10, 8, 10));
+        JPanel editRow = new JPanel(new BorderLayout(8, 4));
+        editRow.setBorder(new EmptyBorder(0, 10, 6, 10));
         editRow.add(new JLabel("Active Rule DSL: "), BorderLayout.WEST);
         dslRuleField.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
         editRow.add(dslRuleField, BorderLayout.CENTER);
@@ -84,21 +84,22 @@ public class PartEInterpreterPanel extends JPanel {
         sensorPanel.add(createFieldWrapper("PARKING_MINS:", parkingMinsSpinner));
         sensorPanel.add(createFieldWrapper("PERMIT (Status):", permitCombo));
 
-        JButton evalBtn = new JButton("🧠 Parse & Evaluate Policy");
-        evalBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        JButton evalBtn = new JButton("Parse & Evaluate Policy");
+        evalBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
         evalBtn.setBackground(new Color(13, 110, 253));
         evalBtn.setForeground(Color.WHITE);
+        evalBtn.setFocusPainted(false);
         evalBtn.addActionListener(e -> evaluateCurrentPolicy());
         sensorPanel.add(evalBtn);
 
-        JPanel upperContainer = new JPanel(new BorderLayout(8, 8));
+        JPanel upperContainer = new JPanel(new BorderLayout(6, 6));
         upperContainer.add(topPanel, BorderLayout.NORTH);
         upperContainer.add(sensorPanel, BorderLayout.CENTER);
 
-        // 3. Verdict Banner
+        // 3. Compact Verdict Banner (No emojis, reduced height)
         verdictBadge.setOpaque(true);
-        verdictBadge.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        verdictBadge.setPreferredSize(new Dimension(800, 42));
+        verdictBadge.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        verdictBadge.setPreferredSize(new Dimension(800, 32));
         verdictBadge.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         // 4. AST Tree & Boolean Trace Split Pane
@@ -117,7 +118,7 @@ public class PartEInterpreterPanel extends JPanel {
         JSplitPane astSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, astPanel, tracePanel);
         astSplit.setResizeWeight(0.42);
 
-        JPanel centerContainer = new JPanel(new BorderLayout(8, 8));
+        JPanel centerContainer = new JPanel(new BorderLayout(6, 6));
         centerContainer.add(verdictBadge, BorderLayout.NORTH);
         centerContainer.add(astSplit, BorderLayout.CENTER);
 
@@ -190,14 +191,14 @@ public class PartEInterpreterPanel extends JPanel {
             traceArea.append(String.format("[Part E] Final Policy Interpretation Outcome: %s\n",
                     violation ? "VIOLATION (TRUE)" : "COMPLIANT (FALSE)"));
 
-            // 5. Update Verdict Banner
+            // 5. Update Verdict Banner without broken emojis
             if (violation) {
-                verdictBadge.setText("🚨 POLICY VIOLATION DETECTED (Condition Evaluated to TRUE)");
+                verdictBadge.setText("[VIOLATION] Policy Violation Detected (Condition Evaluated to TRUE)");
                 verdictBadge.setBackground(new Color(90, 20, 20));
                 verdictBadge.setForeground(new Color(255, 99, 71));
                 verdictBadge.setBorder(BorderFactory.createLineBorder(new Color(244, 67, 54), 2));
             } else {
-                verdictBadge.setText("✅ ENVIRONMENT COMPLIANT (Condition Evaluated to FALSE)");
+                verdictBadge.setText("[OK] Environment Compliant (Condition Evaluated to FALSE)");
                 verdictBadge.setBackground(new Color(20, 60, 20));
                 verdictBadge.setForeground(new Color(76, 175, 80));
                 verdictBadge.setBorder(BorderFactory.createLineBorder(new Color(76, 175, 80), 2));
@@ -211,7 +212,7 @@ public class PartEInterpreterPanel extends JPanel {
                     String.format("Result: %s", violation ? "VIOLATION DETECTED" : "COMPLIANT"));
 
         } catch (Exception ex) {
-            verdictBadge.setText("⚠️ SYNTAX ERROR: " + ex.getMessage());
+            verdictBadge.setText("[!] Syntax Error: " + ex.getMessage());
             verdictBadge.setBackground(new Color(60, 40, 10));
             verdictBadge.setForeground(new Color(255, 193, 7));
             astArea.setText("Unable to construct AST due to parsing error.");

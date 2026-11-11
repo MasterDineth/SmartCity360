@@ -28,10 +28,8 @@ public class PartADecoratorPanel extends JPanel {
     private final JCheckBox compressBox = new JCheckBox("CompressionDecorator (GZIP Stream)", true);
 
     private final JComboBox<String> orderCombo = new JComboBox<>(new String[]{
-            "Encrypt -> Authenticate -> Compress (Standard)",
-            "Compress -> Encrypt -> Authenticate (Bandwidth-First)",
-            "Authenticate -> Encrypt (Signature Encapsulated)",
-            "Selected Checked Order"
+            "Standard Order (Encrypt -> Authenticate -> Compress)",
+            "Reverse Order (Compress -> Authenticate -> Encrypt)"
     });
 
     private final JLabel pipelineVisualLabel = new JLabel();
@@ -48,6 +46,9 @@ public class PartADecoratorPanel extends JPanel {
 
         updatePipelineVisual();
         setupListeners();
+
+        // Auto-run once on launch to populate initial payload and trace
+        executeTransmission();
     }
 
     private JPanel createConfigPanel() {
@@ -64,7 +65,7 @@ public class PartADecoratorPanel extends JPanel {
         formPanel.add(meterIdField);
         formPanel.add(new JLabel("Current Power (kWh):"));
         formPanel.add(kwhSpinner);
-        formPanel.add(new JLabel("Pipeline Preset:"));
+        formPanel.add(new JLabel("Decorator Wrapping Order:"));
         formPanel.add(orderCombo);
 
         // Center: Wrapper Checkboxes
@@ -84,7 +85,7 @@ public class PartADecoratorPanel extends JPanel {
         pipelineVisualLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
         pipelineVisualLabel.setForeground(new Color(0, 180, 216));
 
-        JButton transmitBtn = new JButton("🚀 Transmit Secured Telemetry Stream");
+        JButton transmitBtn = new JButton("Transmit Secured Telemetry Stream");
         transmitBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
         transmitBtn.setBackground(new Color(13, 110, 253));
         transmitBtn.setForeground(Color.WHITE);
@@ -142,19 +143,12 @@ public class PartADecoratorPanel extends JPanel {
         StringBuilder sb = new StringBuilder("Pipeline: [EnergyMeterStream]");
         String preset = (String) orderCombo.getSelectedItem();
 
-        if ("Encrypt -> Authenticate -> Compress (Standard)".equals(preset)) {
-            if (encryptBox.isSelected()) sb.append(" -> [EncryptionDecorator]");
-            if (authBox.isSelected()) sb.append(" -> [AuthenticationDecorator]");
+        if (preset != null && preset.startsWith("Reverse Order")) {
             if (compressBox.isSelected()) sb.append(" -> [CompressionDecorator]");
-        } else if ("Compress -> Encrypt -> Authenticate (Bandwidth-First)".equals(preset)) {
-            if (compressBox.isSelected()) sb.append(" -> [CompressionDecorator]");
-            if (encryptBox.isSelected()) sb.append(" -> [EncryptionDecorator]");
-            if (authBox.isSelected()) sb.append(" -> [AuthenticationDecorator]");
-        } else if ("Authenticate -> Encrypt (Signature Encapsulated)".equals(preset)) {
             if (authBox.isSelected()) sb.append(" -> [AuthenticationDecorator]");
             if (encryptBox.isSelected()) sb.append(" -> [EncryptionDecorator]");
-            if (compressBox.isSelected()) sb.append(" -> [CompressionDecorator]");
         } else {
+            // Standard order: Encrypt -> Authenticate -> Compress
             if (encryptBox.isSelected()) sb.append(" -> [EncryptionDecorator]");
             if (authBox.isSelected()) sb.append(" -> [AuthenticationDecorator]");
             if (compressBox.isSelected()) sb.append(" -> [CompressionDecorator]");
@@ -177,16 +171,12 @@ public class PartADecoratorPanel extends JPanel {
 
         // 2. Dynamically stack decorators according to selection & order
         String preset = (String) orderCombo.getSelectedItem();
-        if ("Compress -> Encrypt -> Authenticate (Bandwidth-First)".equals(preset)) {
+        if (preset != null && preset.startsWith("Reverse Order")) {
             if (compressBox.isSelected()) stream = new CompressionDecorator(stream);
-            if (encryptBox.isSelected()) stream = new EncryptionDecorator(stream);
-            if (authBox.isSelected()) stream = new AuthenticationDecorator(stream);
-        } else if ("Authenticate -> Encrypt (Signature Encapsulated)".equals(preset)) {
             if (authBox.isSelected()) stream = new AuthenticationDecorator(stream);
             if (encryptBox.isSelected()) stream = new EncryptionDecorator(stream);
-            if (compressBox.isSelected()) stream = new CompressionDecorator(stream);
         } else {
-            // Standard / default checked order
+            // Standard order
             if (encryptBox.isSelected()) stream = new EncryptionDecorator(stream);
             if (authBox.isSelected()) stream = new AuthenticationDecorator(stream);
             if (compressBox.isSelected()) stream = new CompressionDecorator(stream);

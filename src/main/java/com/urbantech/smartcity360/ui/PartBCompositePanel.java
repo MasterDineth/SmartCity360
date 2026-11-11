@@ -11,7 +11,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class PartBCompositePanel extends JPanel {
 
     public PartBCompositePanel() {
         setLayout(new BorderLayout(12, 12));
-        setBorder(new EmptyBorder(16, 16, 16, 16));
+        setBorder(new EmptyBorder(14, 14, 14, 14));
 
         buildDefaultCompositeHierarchy();
         initUI();
@@ -84,20 +83,45 @@ public class PartBCompositePanel extends JPanel {
     }
 
     private void initUI() {
-        // Top KPI Banner
-        JPanel kpiPanel = new JPanel(new GridLayout(1, 2, 15, 5));
-        kpiPanel.setBorder(BorderFactory.createCompoundBorder(
+        // Compact Single-Row Top Toolbar merging Status and Action Buttons
+        JPanel toolbarPanel = new JPanel(new BorderLayout(12, 0));
+        toolbarPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEtchedBorder(),
-                new EmptyBorder(10, 15, 10, 15)));
+                new EmptyBorder(6, 12, 6, 12)));
 
-        totalCityLoadLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        JPanel statusGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 4));
+        totalCityLoadLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
         totalCityLoadLabel.setForeground(new Color(0, 180, 216));
-        selectedNodeLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
+        selectedNodeLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+        statusGroup.add(totalCityLoadLabel);
+        statusGroup.add(new JSeparator(SwingConstants.VERTICAL));
+        statusGroup.add(selectedNodeLabel);
 
-        kpiPanel.add(totalCityLoadLabel);
-        kpiPanel.add(selectedNodeLabel);
+        JPanel buttonGroup = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 2));
+        JButton reportBtn = new JButton("Report Usage");
+        JButton shutdownBtn = new JButton("Shutdown Power");
+        JButton restoreBtn = new JButton("Restore Power");
+        JButton addBtn = new JButton("+ Add Building / Zone");
 
-        // Center: Tree on Left, Controls & ASCII Reports on Right
+        shutdownBtn.setBackground(new Color(220, 53, 69));
+        shutdownBtn.setForeground(Color.WHITE);
+        restoreBtn.setBackground(new Color(25, 135, 84));
+        restoreBtn.setForeground(Color.WHITE);
+
+        reportBtn.addActionListener(e -> executeReportUsage());
+        shutdownBtn.addActionListener(e -> executeShutdown());
+        restoreBtn.addActionListener(e -> executeRestore());
+        addBtn.addActionListener(e -> executeAddComponent());
+
+        buttonGroup.add(reportBtn);
+        buttonGroup.add(shutdownBtn);
+        buttonGroup.add(restoreBtn);
+        buttonGroup.add(addBtn);
+
+        toolbarPanel.add(statusGroup, BorderLayout.WEST);
+        toolbarPanel.add(buttonGroup, BorderLayout.EAST);
+
+        // Center: Tree on Left, ASCII Reports and Traversal Logs on Right
         zoneTree = new JTree(treeModel);
         zoneTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         zoneTree.setCellRenderer(new ZoneTreeCellRenderer());
@@ -112,34 +136,12 @@ public class PartBCompositePanel extends JPanel {
         });
 
         JScrollPane treeScrollPane = new JScrollPane(zoneTree);
-        treeScrollPane.setPreferredSize(new Dimension(340, 400));
+        treeScrollPane.setPreferredSize(new Dimension(350, 420));
         treeScrollPane.setBorder(BorderFactory.createTitledBorder("Smart Zone Composite Hierarchy"));
 
-        // Right side: Command Toolbar & Reporting
+        // Right side: Reporting & Traversal Split
         JPanel rightPanel = new JPanel(new BorderLayout(8, 8));
 
-        JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
-        JButton reportBtn = new JButton("📊 Report Usage (Recursive)");
-        JButton shutdownBtn = new JButton("⚡ Shutdown Power (Recursive)");
-        JButton restoreBtn = new JButton("🔌 Restore Power (Recursive)");
-        JButton addBtn = new JButton("➕ Add Building / Zone");
-
-        shutdownBtn.setBackground(new Color(220, 53, 69));
-        shutdownBtn.setForeground(Color.WHITE);
-        restoreBtn.setBackground(new Color(25, 135, 84));
-        restoreBtn.setForeground(Color.WHITE);
-
-        reportBtn.addActionListener(e -> executeReportUsage());
-        shutdownBtn.addActionListener(e -> executeShutdown());
-        restoreBtn.addActionListener(e -> executeRestore());
-        addBtn.addActionListener(e -> executeAddComponent());
-
-        buttonBar.add(reportBtn);
-        buttonBar.add(shutdownBtn);
-        buttonBar.add(restoreBtn);
-        buttonBar.add(addBtn);
-
-        // Reports & Trace split
         reportArea.setEditable(false);
         reportArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         JPanel reportPanel = new JPanel(new BorderLayout());
@@ -155,13 +157,12 @@ public class PartBCompositePanel extends JPanel {
         JSplitPane rightSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, reportPanel, tracePanel);
         rightSplit.setResizeWeight(0.55);
 
-        rightPanel.add(buttonBar, BorderLayout.NORTH);
         rightPanel.add(rightSplit, BorderLayout.CENTER);
 
         JSplitPane mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, rightPanel);
         mainSplit.setResizeWeight(0.35);
 
-        add(kpiPanel, BorderLayout.NORTH);
+        add(toolbarPanel, BorderLayout.NORTH);
         add(mainSplit, BorderLayout.CENTER);
 
         // Initial default report

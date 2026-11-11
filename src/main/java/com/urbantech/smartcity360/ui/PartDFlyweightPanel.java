@@ -32,12 +32,12 @@ public class PartDFlyweightPanel extends JPanel {
     private final KpiCard flyweightRamCard = new KpiCard("Flyweight RAM", "0.00 MB");
     private final KpiCard savingsCard = new KpiCard("RAM Saved", "0.00%");
 
-    // Table Model
+    // Table Model with compact, untruncated header names
     private final String[] columnNames = {
             "Pole ID (Extrinsic)", "Street (Extrinsic)", "Coords (Extrinsic)",
             "Power (Extrinsic)", "Brightness (Extrinsic)",
             "Model Code (Intrinsic)", "Manufacturer (Intrinsic)", "Optics (Intrinsic)",
-            "Shared Model HashCode (Flyweight Proof)"
+            "Shared Flyweight (@Hash)"
     };
     private final DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
         @Override
@@ -47,71 +47,68 @@ public class PartDFlyweightPanel extends JPanel {
     };
     private final JTable inspectedTable = new JTable(tableModel);
 
-    // Quantity Selector
-    private final JSpinner countSpinner = new JSpinner(new SpinnerNumberModel(50_000, 1_000, 200_000, 5_000));
-    private final JTextArea traceArea = new JTextArea(5, 50);
+    // Clean Pole Count Selector Dropdown
+    private final JComboBox<String> poleCountCombo = new JComboBox<>(new String[]{
+            "10,000 Poles", "50,000 Poles", "100,000 Poles"
+    });
+    private final JTextArea traceArea = new JTextArea(4, 50);
 
     public PartDFlyweightPanel() {
-        setLayout(new BorderLayout(12, 12));
-        setBorder(new EmptyBorder(16, 16, 16, 16));
+        setLayout(new BorderLayout(10, 10));
+        setBorder(new EmptyBorder(14, 14, 14, 14));
 
+        poleCountCombo.setSelectedIndex(1); // Default to 50,000
         initUI();
         // Run default benchmark on load
         generateAndBenchmark(50_000);
     }
 
     private void initUI() {
-        // 1. Top Controls Bar
-        JPanel controlBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 8));
+        // 1. Top Controls Bar (Clean Dropdown + Benchmark Button)
+        JPanel controlBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 6));
         controlBar.setBorder(BorderFactory.createTitledBorder("Streetlight Population & Memory Benchmark Controller"));
 
-        controlBar.add(new JLabel("Streetlights to Instantiate:"));
-        controlBar.add(countSpinner);
+        controlBar.add(new JLabel("Pole Count:"));
+        controlBar.add(poleCountCombo);
 
-        JButton btn10k = new JButton("10,000 Poles");
-        JButton btn50k = new JButton("50,000 Poles");
-        JButton btn100k = new JButton("100,000 Poles");
-        JButton runBtn = new JButton("⚡ Run Flyweight Benchmark");
+        JButton runBtn = new JButton("Run Flyweight Benchmark");
         runBtn.setBackground(new Color(13, 110, 253));
         runBtn.setForeground(Color.WHITE);
         runBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        runBtn.setFocusPainted(false);
+        runBtn.addActionListener(e -> {
+            int count = parseSelectedCount();
+            generateAndBenchmark(count);
+        });
 
-        btn10k.addActionListener(e -> { countSpinner.setValue(10_000); generateAndBenchmark(10_000); });
-        btn50k.addActionListener(e -> { countSpinner.setValue(50_000); generateAndBenchmark(50_000); });
-        btn100k.addActionListener(e -> { countSpinner.setValue(100_000); generateAndBenchmark(100_000); });
-        runBtn.addActionListener(e -> generateAndBenchmark(((Number) countSpinner.getValue()).intValue()));
-
-        controlBar.add(btn10k);
-        controlBar.add(btn50k);
-        controlBar.add(btn100k);
         controlBar.add(runBtn);
 
         // 2. KPI Cards Row
         JPanel kpiRow = new JPanel(new GridLayout(1, 5, 10, 0));
-        kpiRow.setPreferredSize(new Dimension(800, 80));
+        kpiRow.setPreferredSize(new Dimension(800, 75));
         kpiRow.add(totalPolesCard);
         kpiRow.add(poolSizeCard);
         kpiRow.add(unoptimizedRamCard);
         kpiRow.add(flyweightRamCard);
         kpiRow.add(savingsCard);
 
-        JPanel headerContainer = new JPanel(new BorderLayout(8, 8));
+        JPanel headerContainer = new JPanel(new BorderLayout(6, 6));
         headerContainer.add(controlBar, BorderLayout.NORTH);
         headerContainer.add(kpiRow, BorderLayout.SOUTH);
 
-        // 3. JTable of Inspected Poles (First 200)
+        // 3. JTable of Inspected Poles (Maximized Display Area)
         inspectedTable.setRowHeight(22);
         inspectedTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         inspectedTable.getTableHeader().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
         JScrollPane tableScroll = new JScrollPane(inspectedTable);
         tableScroll.setBorder(BorderFactory.createTitledBorder("Inspected Physical Streetlight Poles (First 200 Contexts - Demonstrating Shared Flyweight Memory Addresses)"));
 
-        // 4. Mutation Test Bar & Trace Area
-        JPanel bottomPanel = new JPanel(new BorderLayout(6, 6));
+        // 4. Mutation Test Bar & Compact Trace Area
+        JPanel bottomPanel = new JPanel(new BorderLayout(4, 4));
 
-        JPanel mutationBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        JButton togglePowerBtn = new JButton("💡 Toggle Selected Pole Power State (Extrinsic Mutation)");
-        JButton cycleBrightnessBtn = new JButton("🔆 Cycle Selected Pole Brightness (100% -> 50% -> 20%)");
+        JPanel mutationBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        JButton togglePowerBtn = new JButton("Toggle Selected Pole Power State (Extrinsic Mutation)");
+        JButton cycleBrightnessBtn = new JButton("Cycle Selected Pole Brightness (100% -> 50% -> 20%)");
 
         togglePowerBtn.addActionListener(e -> toggleSelectedPolePower());
         cycleBrightnessBtn.addActionListener(e -> cycleSelectedPoleBrightness());
@@ -119,6 +116,7 @@ public class PartDFlyweightPanel extends JPanel {
         mutationBar.add(togglePowerBtn);
         mutationBar.add(cycleBrightnessBtn);
 
+        traceArea.setRows(4);
         traceArea.setEditable(false);
         traceArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         JPanel tracePanel = new JPanel(new BorderLayout());
@@ -128,11 +126,20 @@ public class PartDFlyweightPanel extends JPanel {
         bottomPanel.add(mutationBar, BorderLayout.NORTH);
         bottomPanel.add(tracePanel, BorderLayout.CENTER);
 
+        // Give 80% vertical height to table so 12-15 rows are visible
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tableScroll, bottomPanel);
-        split.setResizeWeight(0.65);
+        split.setResizeWeight(0.80);
+        split.setContinuousLayout(true);
 
         add(headerContainer, BorderLayout.NORTH);
         add(split, BorderLayout.CENTER);
+    }
+
+    private int parseSelectedCount() {
+        String sel = (String) poleCountCombo.getSelectedItem();
+        if (sel != null && sel.contains("10,000")) return 10_000;
+        if (sel != null && sel.contains("100,000")) return 100_000;
+        return 50_000;
     }
 
     private void generateAndBenchmark(int totalCount) {
@@ -243,13 +250,13 @@ public class PartDFlyweightPanel extends JPanel {
             setLayout(new GridLayout(2, 1, 2, 2));
             setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
-                    new EmptyBorder(8, 12, 8, 12)));
+                    new EmptyBorder(6, 10, 6, 10)));
 
             titleLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
             titleLabel.setForeground(Color.GRAY);
             titleLabel.setText(title);
 
-            valueLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+            valueLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
             valueLabel.setText(initialValue);
             if (title.contains("Saved")) {
                 valueLabel.setForeground(new Color(76, 175, 80));

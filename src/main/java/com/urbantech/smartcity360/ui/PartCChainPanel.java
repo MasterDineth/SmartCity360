@@ -26,16 +26,12 @@ public class PartCChainPanel extends JPanel {
     private final SupervisorHandler supervisor = new SupervisorHandler("District Operations Supervisor");
     private final CityManagerHandler cityManager = new CityManagerHandler("Executive Municipal Office");
 
-    // Form fields
+    // Form fields (Simplified to a single clean row)
     private int complaintCounter = 101;
-    private final JTextField complaintIdField = new JTextField("CMP-0101", 8);
-    private final JTextField citizenNameField = new JTextField("Jane Doe", 12);
-    private final JComboBox<String> categoryCombo = new JComboBox<>(new String[]{
-            "Sanitation & Waste", "Water & Utilities", "Power Grid & Electrical",
-            "Roads & Traffic Signals", "Homeland Security / Civic Emergency"
-    });
-    private final JTextField descField = new JTextField("Water main pressure surge on 4th Avenue", 22);
+    private final JTextField complaintIdField = new JTextField("CMP-0101", 7);
     private final JComboBox<SeverityLevel> severityCombo = new JComboBox<>(SeverityLevel.values());
+    private final JTextField descField = new JTextField("Water main pressure surge on 4th Avenue", 28);
+    private final JButton submitBtn = new JButton("Submit Complaint");
 
     // Dynamic Handler Toggles
     private final JCheckBox localStaffActiveBox = new JCheckBox("Tier 1: Local Staff (Active)", true);
@@ -46,90 +42,72 @@ public class PartCChainPanel extends JPanel {
     private final HandlerCard localStaffCard = new HandlerCard("Tier 1: Local Staff", "Handles: LOW");
     private final HandlerCard supervisorCard = new HandlerCard("Tier 2: District Supervisor", "Handles: MEDIUM");
     private final HandlerCard cityManagerCard = new HandlerCard("Tier 3: City Manager", "Handles: HIGH");
-    private final HandlerCard fallbackCard = new HandlerCard("Tier 4: State Bureau", "Fallback: EXTREME");
+    private final HandlerCard fallbackCard = new HandlerCard("Fallback: Executive / Unhandled", "Handles: EXTREME (Chain Exhausted)");
 
     // Results & Trace
-    private final JLabel resolutionBanner = new JLabel("Status: Submit a complaint to trace the escalation chain.");
-    private final JTextArea trailArea = new JTextArea(8, 45);
+    private final JLabel resolutionBanner = new JLabel("Status: Ready to process municipal complaints.");
+    private final JTextArea trailArea = new JTextArea(10, 45);
 
     public PartCChainPanel() {
-        setLayout(new BorderLayout(12, 12));
-        setBorder(new EmptyBorder(16, 16, 16, 16));
+        setLayout(new BorderLayout(10, 10));
+        setBorder(new EmptyBorder(14, 14, 14, 14));
 
         // Connect the GoF Chain of Responsibility
         localStaff.setNextHandler(supervisor).setNextHandler(cityManager);
 
+        complaintIdField.setEditable(false);
         initUI();
         setupListeners();
+
+        // Auto-submit one default sample complaint on launch
+        executeEscalation();
     }
 
     private void initUI() {
-        JPanel topPanel = new JPanel(new BorderLayout(8, 8));
-
-        // 1. Complaint Submission Form
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        // 1. Single-Row Simplified Complaint Submission Form
+        JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 6));
         formPanel.setBorder(BorderFactory.createTitledBorder("Citizen Municipal Complaint Submission Portal"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 8, 4, 8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        formPanel.add(new JLabel("Complaint ID:"), gbc);
-        gbc.gridx = 1;
-        formPanel.add(complaintIdField, gbc);
+        formPanel.add(new JLabel("Complaint ID:"));
+        formPanel.add(complaintIdField);
 
-        gbc.gridx = 2;
-        formPanel.add(new JLabel("Citizen Name:"), gbc);
-        gbc.gridx = 3;
-        formPanel.add(citizenNameField, gbc);
+        formPanel.add(new JLabel("Severity Tier:"));
+        formPanel.add(severityCombo);
 
-        gbc.gridx = 4;
-        formPanel.add(new JLabel("Severity Tier:"), gbc);
-        gbc.gridx = 5;
-        formPanel.add(severityCombo, gbc);
+        formPanel.add(new JLabel("Incident Description:"));
+        formPanel.add(descField);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        formPanel.add(new JLabel("Category:"), gbc);
-        gbc.gridx = 1;
-        formPanel.add(categoryCombo, gbc);
-
-        gbc.gridx = 2;
-        formPanel.add(new JLabel("Incident Description:"), gbc);
-        gbc.gridx = 3; gbc.gridwidth = 3;
-        formPanel.add(descField, gbc);
+        submitBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        submitBtn.setBackground(new Color(13, 110, 253));
+        submitBtn.setForeground(Color.WHITE);
+        submitBtn.setFocusPainted(false);
+        submitBtn.addActionListener(e -> executeEscalation());
+        formPanel.add(submitBtn);
 
         // 2. Dynamic Chain Active/Bypass Toggles
-        JPanel togglesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 6));
+        JPanel togglesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 4));
         togglesPanel.setBorder(BorderFactory.createTitledBorder("Dynamic Chain Configuration (Enable/Disable Handlers at Runtime)"));
         togglesPanel.add(localStaffActiveBox);
         togglesPanel.add(supervisorActiveBox);
         togglesPanel.add(cityManagerActiveBox);
 
-        topPanel.add(formPanel, BorderLayout.NORTH);
-        topPanel.add(togglesPanel, BorderLayout.SOUTH);
-
         // 3. Visual Chain Cards Panel
-        JPanel chainVisualPanel = new JPanel(new GridLayout(1, 4, 12, 0));
+        JPanel chainVisualPanel = new JPanel(new GridLayout(1, 4, 10, 0));
         chainVisualPanel.setBorder(BorderFactory.createTitledBorder("Live Chain of Responsibility Authority Flow"));
-        chainVisualPanel.setPreferredSize(new Dimension(800, 110));
+        chainVisualPanel.setPreferredSize(new Dimension(800, 95));
         chainVisualPanel.add(localStaffCard);
         chainVisualPanel.add(supervisorCard);
         chainVisualPanel.add(cityManagerCard);
         chainVisualPanel.add(fallbackCard);
 
-        // Action Button
-        JButton submitBtn = new JButton("📨 Submit Complaint to Escalation Chain");
-        submitBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
-        submitBtn.setBackground(new Color(13, 110, 253));
-        submitBtn.setForeground(Color.WHITE);
-        submitBtn.addActionListener(e -> executeEscalation());
+        // Combine into Top Control Container
+        JPanel topContainer = new JPanel(new BorderLayout(6, 6));
+        topContainer.add(formPanel, BorderLayout.NORTH);
+        topContainer.add(togglesPanel, BorderLayout.CENTER);
+        topContainer.add(chainVisualPanel, BorderLayout.SOUTH);
 
-        JPanel centerContainer = new JPanel(new BorderLayout(8, 8));
-        centerContainer.add(chainVisualPanel, BorderLayout.CENTER);
-        centerContainer.add(submitBtn, BorderLayout.SOUTH);
-
-        // 4. Resolution Banner & Trace Output
-        JPanel outputPanel = new JPanel(new BorderLayout(8, 8));
+        // 4. Resolution Banner & Trace Output (Occupies Full Center Height)
+        JPanel outputPanel = new JPanel(new BorderLayout(6, 6));
 
         JPanel bannerPanel = new JPanel(new BorderLayout());
         bannerPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -147,12 +125,8 @@ public class PartCChainPanel extends JPanel {
         outputPanel.add(bannerPanel, BorderLayout.NORTH);
         outputPanel.add(tracePanel, BorderLayout.CENTER);
 
-        JPanel mainLayout = new JPanel(new BorderLayout(10, 10));
-        mainLayout.add(topPanel, BorderLayout.NORTH);
-        mainLayout.add(centerContainer, BorderLayout.CENTER);
-        mainLayout.add(outputPanel, BorderLayout.SOUTH);
-
-        add(mainLayout, BorderLayout.CENTER);
+        add(topContainer, BorderLayout.NORTH);
+        add(outputPanel, BorderLayout.CENTER);
     }
 
     private void setupListeners() {
@@ -180,12 +154,10 @@ public class PartCChainPanel extends JPanel {
         resetCards();
 
         String id = complaintIdField.getText().trim();
-        String citizen = citizenNameField.getText().trim();
-        String category = (String) categoryCombo.getSelectedItem();
         String desc = descField.getText().trim();
         SeverityLevel severity = (SeverityLevel) severityCombo.getSelectedItem();
 
-        ComplaintRequest request = new ComplaintRequest(id, citizen, category, desc, severity);
+        ComplaintRequest request = new ComplaintRequest(id, "Registered Citizen", "Municipal Grid", desc, severity);
         List<String> trail = new ArrayList<>();
 
         // Traversal begins at head of chain
@@ -200,18 +172,18 @@ public class PartCChainPanel extends JPanel {
         // Highlight visual cards according to trail
         highlightCardsFromTrail(resolution.getEscalationTrail(), resolution.isHandled());
 
-        // Update Banner
+        // Update Banner without broken emojis
         if (resolution.isHandled()) {
             resolutionBanner.setForeground(new Color(25, 135, 84));
-            resolutionBanner.setText(String.format("✅ RESOLVED by %s | Action: %s",
+            resolutionBanner.setText(String.format("[OK] RESOLVED by %s | Action: %s",
                     resolution.getHandledByRole(), resolution.getActionTaken()));
         } else {
             resolutionBanner.setForeground(new Color(220, 53, 69));
-            resolutionBanner.setText(String.format("🚨 UNRESOLVED in Chain | Action: %s",
+            resolutionBanner.setText(String.format("[!] UNRESOLVED in Chain | Action: %s",
                     resolution.getActionTaken()));
         }
 
-        // Increment complaint ID for convenience
+        // Increment complaint ID for next submission
         complaintCounter++;
         complaintIdField.setText(String.format("CMP-%04d", complaintCounter));
 
@@ -249,7 +221,7 @@ public class PartCChainPanel extends JPanel {
                 else if (step.contains("ESCALATED")) cityManagerCard.setStatus("ESCALATED", CardState.ESCALATED);
             }
             if (step.contains("[CHAIN-EXHAUSTED]")) {
-                fallbackCard.setStatus("UNRESOLVED (Fallback Enacted)", CardState.EXHAUSTED);
+                fallbackCard.setStatus("EXHAUSTED (Fallback Enacted)", CardState.EXHAUSTED);
             }
         }
     }
